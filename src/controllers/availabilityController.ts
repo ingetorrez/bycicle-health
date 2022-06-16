@@ -3,7 +3,7 @@ import { AppointmentAvailability, AppointmentTypeId } from "../services/availabi
 import { Response } from '../types/index' 
 const availability=async (req, res) => {
         const appointmentAvailability = new AppointmentAvailability(Deps);
-        let {providerId, appointmentTypeId, start, end} = req.query
+        const {providerId, appointmentTypeId, start, end} = req.query
         const startDate = new Date(start.toString());
         const endDate = new Date(end.toString());
       

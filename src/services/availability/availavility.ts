@@ -145,7 +145,7 @@ export class AppointmentAvailability {
     start: Date,
     end: Date,
   ):TimeRange[]{
-    let result:TimeRange[]=[]
+    const result:TimeRange[]=[]
     let newStartDate = new Date(start)
 
     const numEventsAppointments = eventsAndAppointments.length - 1
@@ -186,7 +186,7 @@ export class AppointmentAvailability {
     appointmentTypeId: AppointmentTypeId
   ):TimeRange[]{
     const minutes = appointmentTypes.filter(type=>type.appointmentTypeId===appointmentTypeId)[0].durationMins
-    let result:TimeRange[]=[]
+    const result:TimeRange[]=[]
 
     generalRanges.forEach(item=>{
       const start = moment(item.start)

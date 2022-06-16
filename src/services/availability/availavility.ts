@@ -149,6 +149,7 @@ export class AppointmentAvailability {
     let newStartDate = new Date(start)
 
     const numEventsAppointments = eventsAndAppointments.length - 1
+    //Return range received if there are not events or appointments 
     if(numEventsAppointments===-1){
       return[
         {
@@ -214,7 +215,7 @@ export class AppointmentAvailability {
     const generalRanges: TimeRange[] = this.getGeneralRanges(eventsAndAppointments, start,end)
     const result: TimeRange[] = this.getRanges(generalRanges,appointmentTypeId)
 
-    console.log(eventsAndAppointments,generalRanges,result)
+    
     return result;
   }
 }

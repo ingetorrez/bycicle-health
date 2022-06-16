@@ -103,7 +103,7 @@ export class AppointmentAvailability {
     this.getBookedAppointments = deps.getBookedAppointments;
   }
 
-  async getEventsAndAppointmentsWithEnd(
+  async getEventsAndAppointmentsRanges(
     providerId: string,
     start: Date,
     end: Date,
@@ -131,8 +131,12 @@ export class AppointmentAvailability {
         end
       }
     })
+    let eventsAndAppointmentsRanges=[...timeEvents,...timeAppointments]
 
-    return [...timeEvents,...timeAppointments];
+    eventsAndAppointmentsRanges = eventsAndAppointmentsRanges.sort((a,b)=>a.start.getTime()-b.start.getTime())
+
+    
+    return eventsAndAppointmentsRanges;
 
   }
 
@@ -145,24 +149,32 @@ export class AppointmentAvailability {
     let newStartDate = new Date(start)
 
     const numEventsAppointments = eventsAndAppointments.length - 1
+    if(numEventsAppointments===-1){
+      return[
+        {
+          start,
+          end
+        }
+      ]
+    }
 
     eventsAndAppointments.forEach((item,idx)=>{
-      if(item.start>newStartDate){
+      if(item.end>newStartDate && item.start<end && item.start>=newStartDate){
         result.push({
           start:newStartDate,
           end:item.start
-        })
+        })      
         
-        newStartDate=item.end
 
-        if(idx==numEventsAppointments && item.end<end){
+        if(idx == numEventsAppointments && item.start < end && item.end<end){
           result.push({
-            start:newStartDate,
+            start:item.end,
             end
           })
         }
         
       }
+      newStartDate=item.end
     })
 
     return result;
@@ -181,7 +193,7 @@ export class AppointmentAvailability {
 
       const rangeOnMinutes = end.diff(start,'minutes')
 
-      if(rangeOnMinutes>minutes){
+      if(rangeOnMinutes>=minutes){
         result.push({
           start:item.start,
           end:item.end
@@ -198,10 +210,11 @@ export class AppointmentAvailability {
     start: Date,
     end: Date,
   ): Promise<TimeRange[]> {   
-    const eventsAndAppointments = await this.getEventsAndAppointmentsWithEnd(providerId,start,end)
+    const eventsAndAppointments: TimeRange[] = await this.getEventsAndAppointmentsRanges(providerId,start,end)
     const generalRanges: TimeRange[] = this.getGeneralRanges(eventsAndAppointments, start,end)
     const result: TimeRange[] = this.getRanges(generalRanges,appointmentTypeId)
 
+    console.log(eventsAndAppointments,generalRanges,result)
     return result;
   }
 }

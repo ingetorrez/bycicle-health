@@ -1,5 +1,6 @@
 import { ValProvider, ValAppointmentType } from '../../services/availability'
 import { Response, AError } from '../../types' 
+import moment from 'moment'
 
 const ValNotNullNotEmpty=(param:string,name:string, msg:string):AError=>{
     const result = {
@@ -58,19 +59,35 @@ export const Validation=(req, res, next) => {
           message:"Start date is invalid"
         })
       }
-
+    
+    
     const valEnd = ValNotNullNotEmpty(end,'end',"End date")
     
     if(valEnd.message!=""){
         errors.push(valEnd)
     }else if(isNaN(Date.parse(end))){
         errors.push({
-        param:"end",
-        value:end.toString(),
-        message:"End date is invalid"
+          param:"end",
+          value:end.toString(),
+          message:"End date is invalid"
         })
     }
 
+    //Validate end date greater than start
+    if(valStart.message=="" && valEnd.message=="" && !isNaN(Date.parse(start)) && !isNaN(Date.parse(end))){
+      var sDate = moment(start);
+      var eDate = moment(end);
+      var duration = moment.duration(eDate.diff(sDate));
+      var miliseconds = duration.asMinutes();
+
+      if(miliseconds<=0){
+        errors.push({
+          param:"start and end",
+          value:`Start date ${start.toString()} | End date ${end.toString()}`,
+          message:"End should be greater than Start"
+        })
+      }
+    }
 
   
     if(errors.length>0){
@@ -79,7 +96,7 @@ export const Validation=(req, res, next) => {
         status:400,
         errors
       }
-      res.send(response)
+      res.status(400).json(response)
     }else{
       next()
     }

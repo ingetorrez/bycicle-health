@@ -20,7 +20,7 @@ const ValNotNullNotEmpty=(param:string,name:string, msg:string):AError=>{
 }
 
 export const Validation=(req, res, next) => {
-    let {providerId, appointmentTypeId, start, end} = req.query
+    const {providerId, appointmentTypeId, start, end} = req.query
     //Validate providerId not null, not empty
     const errors:AError[] = []
     const valProvider = ValNotNullNotEmpty(providerId,'providerId',"Provider")
@@ -75,10 +75,10 @@ export const Validation=(req, res, next) => {
 
     //Validate end date greater than start
     if(valStart.message=="" && valEnd.message=="" && !isNaN(Date.parse(start)) && !isNaN(Date.parse(end))){
-      var sDate = moment(start);
-      var eDate = moment(end);
-      var duration = moment.duration(eDate.diff(sDate));
-      var miliseconds = duration.asMinutes();
+      const sDate = moment(start);
+      const eDate = moment(end);
+      const duration = moment.duration(eDate.diff(sDate));
+      const miliseconds = duration.asMinutes();
 
       if(miliseconds<=0){
         errors.push({
